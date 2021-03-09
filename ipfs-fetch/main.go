@@ -13,11 +13,13 @@ import (
 )
 
 var (
+    nopin = false
     ipfsurl = "127.0.0.1:8080"
 )
 
 func init() {
     flag.StringVar(&ipfsurl, "ipfsurl", ipfsurl, "URL to running IPFS node")
+    flag.BoolVar(&nopin, "nopin", nopin, "Do not pin the fetched asset")
 }
 
 type Payload map[string]string
@@ -104,8 +106,14 @@ func main() {
                 fmt.Fprintf(os.Stderr, "ERROR: cannot fetch asset %q to path %q — %v\n", hash, dest, err)
                 exitcode = 2
             } else {
-                if err = fetcher.Fetch(hash, p); err != nil {
-                    fmt.Fprintf(os.Stderr, "ERROR: failed to fetch asset %q to path %q — %v\n", hash, p, err)
+                if nopin {
+                    if err = fetcher.Fetch(hash, p); err != nil {
+                        fmt.Fprintf(os.Stderr, "ERROR: failed to fetch asset %q to path %q — %v\n", hash, p, err)
+                    }
+                } else {
+                    if err = fetcher.FetchAndPin(hash, p); err != nil {
+                        fmt.Fprintf(os.Stderr, "ERROR: failed to fetch asset %q to path %q — %v\n", hash, p, err)
+                    }
                 }
             }
         }
