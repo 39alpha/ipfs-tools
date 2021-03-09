@@ -14,7 +14,7 @@ import (
 
 var (
     nopin = false
-    ipfsurl = "127.0.0.1:8080"
+    ipfsurl = "127.0.0.1:5001"
 )
 
 func init() {
