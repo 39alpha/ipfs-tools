@@ -1,6 +1,8 @@
 cloud.google.com/go v0.26.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMTw=
 github.com/39alpha/ipfs-tools/ipfs-shell v0.0.0-20210309084926-b7a8450949f0 h1:iqGhkWRFTrncEGNIn3dMaOoB9sXdl1AN1NR7Xqp0d58=
 github.com/39alpha/ipfs-tools/ipfs-shell v0.0.0-20210309084926-b7a8450949f0/go.mod h1:6NeOEEDxGWK4zUhlRrQ+MoRjcn3R/2elSmxukmL2kYc=
+github.com/39alpha/ipfs-tools/ipfs-shell v0.0.2 h1:Ir8baeFOxDZDStRJPafx5HOyiby8hS9bsh0IGUh0wm8=
+github.com/39alpha/ipfs-tools/ipfs-shell v0.0.2/go.mod h1:6NeOEEDxGWK4zUhlRrQ+MoRjcn3R/2elSmxukmL2kYc=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/aead/siphash v1.0.1/go.mod h1:Nywa3cDsYNNK3gaciGTWPwHt0wlpNV15vwmswBAUSII=
 github.com/btcsuite/btcd v0.20.1-beta/go.mod h1:wVuoA8VJLEcwgqHBwHmzLRazpKxTv13Px/pDuV7OomQ=
