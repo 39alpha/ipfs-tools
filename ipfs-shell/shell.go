@@ -62,6 +62,13 @@ func (shell *IpfsShell) Get(hash, outdir string) error {
 	return shell.s.Get(hash, outdir)
 }
 
+func (shell *IpfsShell) Pin(path string) error {
+	if !shell.IsUp() {
+		return fmt.Errorf("shell is not up")
+	}
+	return shell.s.Pin(path)
+}
+
 func (shell *IpfsShell) Fetch(hash, path string) error {
 	if !shell.IsUp() {
 		return fmt.Errorf("shell is not up")
@@ -102,24 +109,31 @@ func (shell *IpfsShell) Fetch(hash, path string) error {
 	}
 }
 
+func (shell *IpfsShell) FetchAndPin(hash, path string) error {
+	if err := shell.Fetch(hash, path); err != nil {
+		return err
+	}
+	return shell.Pin(hash)
+}
+
 func (shell *IpfsShell) Put(path string) (string, error) {
-    if !shell.IsUp() {
-        return "", fmt.Errorf("shell is not up")
-    }
+	if !shell.IsUp() {
+		return "", fmt.Errorf("shell is not up")
+	}
 
-    if stat, err := os.Stat(path); err != nil {
-        return "", err
-    } else if stat.IsDir() {
-        return shell.s.AddDir(path)
-    } else if stat.Mode().IsRegular() {
-        file, err := os.Open(path)
-        if err != nil {
-            return "", err
-        }
-        defer file.Close()
+	if stat, err := os.Stat(path); err != nil {
+		return "", err
+	} else if stat.IsDir() {
+		return shell.s.AddDir(path)
+	} else if stat.Mode().IsRegular() {
+		file, err := os.Open(path)
+		if err != nil {
+			return "", err
+		}
+		defer file.Close()
 
-        return shell.s.Add(file)
-    } else {
-        return "", fmt.Errorf("path must be a directory or regular file")
-    }
+		return shell.s.Add(file)
+	} else {
+		return "", fmt.Errorf("path must be a directory or regular file")
+	}
 }
