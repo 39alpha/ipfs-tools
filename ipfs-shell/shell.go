@@ -1,6 +1,7 @@
 package shell
 
 import (
+	"context"
 	"fmt"
 	ipfs "github.com/ipfs/go-ipfs-api"
 	"io/fs"
@@ -67,6 +68,13 @@ func (shell *IpfsShell) Pin(path string) error {
 		return fmt.Errorf("shell is not up")
 	}
 	return shell.s.Pin(path)
+}
+
+func (shell *IpfsShell) SwarmConnect(ctx context.Context, addr ...string) error {
+	if !shell.IsUp() {
+		return fmt.Errorf("shell is not up")
+	}
+	return shell.s.SwarmConnect(ctx, addr...)
 }
 
 func (shell *IpfsShell) Fetch(hash, path string) error {
