@@ -15,6 +15,7 @@ import (
 var (
     nopin = false
     nofetch = false
+    dryrun = false
     verbose = false
     ipfsurl = "127.0.0.1:5001"
 )
@@ -24,6 +25,7 @@ func init() {
     flag.BoolVar(&nopin, "nopin", nopin, "Do not pin the fetched asset")
     flag.BoolVar(&nofetch, "nofetch", nofetch, "Do not download files; only pin them to the IPFS node")
     flag.BoolVar(&verbose, "verbose", verbose, "Generate verbose output")
+    flag.BoolVar(&dryrun, "dryrun", dryrun, "Pretend to fetch and pin, but don't really do it (useful with the -verbose flag)")
 }
 
 type Payload map[string]string
@@ -118,25 +120,31 @@ func main() {
                     if verbose {
                         fmt.Printf("INFO: Pinning asset %q (%q)\n", hash, p)
                     }
-                    if err = fetcher.Pin(hash); err != nil {
-                        fmt.Fprintf(os.Stderr, "ERROR: failed to pin asset %q — %v\n", hash, err)
-                        exitcode = 5
+                    if (!dryrun) {
+                        if err = fetcher.Pin(hash); err != nil {
+                            fmt.Fprintf(os.Stderr, "ERROR: failed to pin asset %q — %v\n", hash, err)
+                            exitcode = 5
+                        }
                     }
                 } else if !nofetch && nopin {
                     if verbose {
                         fmt.Printf("INFO: Fetching asset %q to %q\n", hash, p)
                     }
-                    if err = fetcher.Fetch(hash, p); err != nil {
-                        fmt.Fprintf(os.Stderr, "ERROR: failed to fetch asset %q to path %q — %v\n", hash, p, err)
-                        exitcode = 5
+                    if !dryrun {
+                        if err = fetcher.Fetch(hash, p); err != nil {
+                            fmt.Fprintf(os.Stderr, "ERROR: failed to fetch asset %q to path %q — %v\n", hash, p, err)
+                            exitcode = 5
+                        }
                     }
                 } else if !nofetch {
                     if verbose {
                         fmt.Printf("INFO: Fetching and pinning asset %q to %q\n", hash, p)
                     }
-                    if err = fetcher.FetchAndPin(hash, p); err != nil {
-                        fmt.Fprintf(os.Stderr, "ERROR: failed to fetch asset %q to path %q — %v\n", hash, p, err)
-                        exitcode = 5
+                    if !dryrun {
+                        if err = fetcher.FetchAndPin(hash, p); err != nil {
+                            fmt.Fprintf(os.Stderr, "ERROR: failed to fetch asset %q to path %q — %v\n", hash, p, err)
+                            exitcode = 5
+                        }
                     }
                 } else {
                     if verbose {
