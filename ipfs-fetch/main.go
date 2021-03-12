@@ -160,7 +160,7 @@ func main() {
 				} else if !nofetch {
 					err = FetchAndPin(fetcher, hash, p, verbose, dryrun)
 				} else if verbose {
-                    fmt.Printf("INFO: Ignoring asset %q (%q)\n", hash, p)
+					fmt.Printf("INFO: Ignoring asset %q (%q)\n", hash, p)
 				}
 				if err != nil {
 					fmt.Fprintf(os.Stderr, "ERROR: %v\n", err)
