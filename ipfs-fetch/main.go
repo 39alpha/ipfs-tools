@@ -99,7 +99,7 @@ func Usage() {
 	flag.PrintDefaults()
 }
 
-func NoFetch(fetcher *ipfs.IpfsShell, hash, p string, verbose, dryrun bool) error {
+func NoFetch(fetcher *ipfs.IpfsShell, hash, p string) error {
 	if verbose {
 		fmt.Printf("INFO: Pinning asset %q (%q)\n", hash, p)
 	}
@@ -111,7 +111,7 @@ func NoFetch(fetcher *ipfs.IpfsShell, hash, p string, verbose, dryrun bool) erro
 	return nil
 }
 
-func NoPin(fetcher *ipfs.IpfsShell, hash, p string, verbose, dryrun bool) error {
+func NoPin(fetcher *ipfs.IpfsShell, hash, p string) error {
 	if verbose {
 		fmt.Printf("INFO: Fetching asset %q to %q\n", hash, p)
 	}
@@ -123,7 +123,7 @@ func NoPin(fetcher *ipfs.IpfsShell, hash, p string, verbose, dryrun bool) error 
 	return nil
 }
 
-func FetchAndPin(fetcher *ipfs.IpfsShell, hash, p string, verbose, dryrun bool) error {
+func FetchAndPin(fetcher *ipfs.IpfsShell, hash, p string) error {
 	if verbose {
 		fmt.Printf("INFO: Fetching and pinning asset %q to %q\n", hash, p)
 	}
@@ -140,15 +140,15 @@ func Process(fetcher *ipfs.IpfsShell, payload Payload) error {
 		if p, err := Normalize(dest); err != nil {
 			return err
 		} else if nofetch && !nopin {
-			if err = NoFetch(fetcher, hash, p, verbose, dryrun); err != nil {
+			if err = NoFetch(fetcher, hash, p); err != nil {
 				return err
 			}
 		} else if !nofetch && nopin {
-			if err = NoPin(fetcher, hash, p, verbose, dryrun); err != nil {
+			if err = NoPin(fetcher, hash, p); err != nil {
 				return err
 			}
 		} else if !nofetch {
-			if err = FetchAndPin(fetcher, hash, p, verbose, dryrun); err != nil {
+			if err = FetchAndPin(fetcher, hash, p); err != nil {
 				return err
 			}
 		} else if verbose {
