@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	ipfs "github.com/39alpha/ipfs-tools/ipfs-shell"
+	"io"
 	"io/ioutil"
 	"os"
 	"path"
@@ -30,18 +31,31 @@ func init() {
 
 type Payload map[string]string
 
-func ReadPayload(filename string) (Payload, error) {
-	blob, err := ioutil.ReadFile(filename)
-	if err != nil {
-		return nil, err
-	}
-
+func ParsePayload(blob []byte) (Payload, error) {
 	var payload Payload
 	if err := json.Unmarshal(blob, &payload); err != nil {
 		return nil, err
 	}
 
 	return payload, nil
+}
+
+func ReadPayload(r io.Reader) (Payload, error) {
+	blob, err := ioutil.ReadAll(r)
+	if err != nil {
+		return nil, err
+	}
+
+	return ParsePayload(blob)
+}
+
+func ReadPayloadFile(filename string) (Payload, error) {
+	blob, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return nil, err
+	}
+
+	return ParsePayload(blob)
 }
 
 type PathValidityError int
@@ -121,13 +135,31 @@ func FetchAndPin(fetcher *ipfs.IpfsShell, hash, p string, verbose, dryrun bool) 
 	return nil
 }
 
+func Process(fetcher *ipfs.IpfsShell, payload Payload) error {
+	for hash, dest := range payload {
+		if p, err := Normalize(dest); err != nil {
+			return err
+		} else if nofetch && !nopin {
+			if err = NoFetch(fetcher, hash, p, verbose, dryrun); err != nil {
+				return err
+			}
+		} else if !nofetch && nopin {
+			if err = NoPin(fetcher, hash, p, verbose, dryrun); err != nil {
+				return err
+			}
+		} else if !nofetch {
+			if err = FetchAndPin(fetcher, hash, p, verbose, dryrun); err != nil {
+				return err
+			}
+		} else if verbose {
+			fmt.Printf("INFO: Ignoring asset %q (%q)\n", hash, p)
+		}
+	}
+	return nil
+}
+
 func main() {
 	flag.Parse()
-
-	if flag.NArg() == 0 {
-		Usage()
-		os.Exit(1)
-	}
 
 	if nofetch && nopin && !verbose {
 		fmt.Fprintf(os.Stderr, "WARNING: -nopin and -nofetch were both provided; no disk or IPFS node modifications will be performed\n")
@@ -136,39 +168,30 @@ func main() {
 	fetcher, err := ipfs.NewIpfsShell(ipfsurl)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "ERROR: cannot establish connection to IPFS shell — %v\n", err)
-		os.Exit(3)
+		os.Exit(1)
 	}
 
-	for _, file := range flag.Args() {
-		payload, err := ReadPayload(file)
+	if flag.NArg() == 0 {
+		payload, err := ReadPayload(os.Stdin)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "ERROR: cannot read data payload — %v\n", err)
+			fmt.Fprintf(os.Stderr, "ERROR: cannot read data payload from standard input — %v\n", err)
 			os.Exit(2)
 		}
-
-		exitcode := 0
-		for hash, dest := range payload {
-			if p, err := Normalize(dest); err != nil {
-				fmt.Fprintf(os.Stderr, "ERROR: cannot fetch asset %q to path %q — %v\n", hash, dest, err)
-				exitcode = 4
-			} else {
-				err = nil
-				if nofetch && !nopin {
-					err = NoFetch(fetcher, hash, p, verbose, dryrun)
-				} else if !nofetch && nopin {
-					err = NoPin(fetcher, hash, p, verbose, dryrun)
-				} else if !nofetch {
-					err = FetchAndPin(fetcher, hash, p, verbose, dryrun)
-				} else if verbose {
-					fmt.Printf("INFO: Ignoring asset %q (%q)\n", hash, p)
-				}
-				if err != nil {
-					fmt.Fprintf(os.Stderr, "ERROR: %v\n", err)
-					exitcode = 5
-				}
+		if err = Process(fetcher, payload); err != nil {
+			fmt.Fprintf(os.Stderr, "ERROR: cannot process payload - %v\n", err)
+			os.Exit(3)
+		}
+	} else {
+		for _, file := range flag.Args() {
+			payload, err := ReadPayloadFile(file)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "ERROR: cannot read data payload — %v\n", err)
+				os.Exit(2)
+			}
+			if err = Process(fetcher, payload); err != nil {
+				fmt.Fprintf(os.Stderr, "ERROR: cannot process payload - %v\n", err)
+				os.Exit(3)
 			}
 		}
-
-		os.Exit(exitcode)
 	}
 }
