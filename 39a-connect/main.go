@@ -24,13 +24,13 @@ func init() {
     flag.StringVar(&api, "api", api, "39A API version")
     flag.StringVar(&ipfsurl, "ipfsurl", ipfsurl, "URL to running IPFS node")
     flag.BoolVar(&verbose, "v", verbose, "Print verbose status messages")
-}
 
-func Usage() {
-    fmt.Fprintf(flag.CommandLine.Output(), "Usage: %s [OPTION]... [FILE]...\n\n", os.Args[0])
-    fmt.Fprintf(flag.CommandLine.Output(), "Connect to the 39alpha IPFS gateway [FILE]...\n\n")
-    fmt.Fprintf(flag.CommandLine.Output(), "Options:\n\n")
-    flag.PrintDefaults()
+    flag.Usage = func() {
+        fmt.Fprintf(flag.CommandLine.Output(), "Usage: %s [OPTIONS]\n\n", os.Args[0])
+        fmt.Fprintf(flag.CommandLine.Output(), "Establish a peer-to-peer connection to the 39 Alpha gateway node.\n\n")
+        fmt.Fprintf(flag.CommandLine.Output(), "Options:\n")
+        flag.PrintDefaults()
+    }
 }
 
 type Addrs struct {

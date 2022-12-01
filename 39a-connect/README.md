@@ -27,16 +27,22 @@ $ 39a-connect
 ```
 And you are done!
 
+## Additional Flags
+
 The command takes only a handful of command line flags.
 
 ```shell
-$ 39a-connect -h
-Usage of 39a-connect:
+Usage: 39a-connect [OPTIONS]
+
+Establish a peer-to-peer connection to the 39 Alpha gateway node.
+
+Options:
   -api string
     	39A API version (default "api/v0")
   -ipfsurl string
     	URL to running IPFS node (default "127.0.0.1:5001")
   -v	Print verbose status messages
+
 ```
 
 The most useful flag is `-v` which simply prints the status of the connection process, in particular
