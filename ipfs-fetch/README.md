@@ -62,19 +62,24 @@ fetching again. A subsequent version will handle this processes more gracefully,
 
 ```shell
 $ ipfs-fetch
-Usage: ipfs-fetch [OPTION]... [FILE]...
+Usage: ipfs-fetch [OPTIONS] [FILES...]
 
-Fetch assets specified by [FILE]...
+Fetch assets specified in the provided FILES. If no files are
+provided, then the assets are read from standard input.
 
 Options:
 
+  -dryrun
+    	Pretend to fetch and pin, but don't really do it (useful with the -verbose flag)
   -ipfsurl string
     	URL to running IPFS node (default "127.0.0.1:5001")
+  -nofetch
+    	Do not download files; only pin them to the IPFS node
   -nopin
     	Do not pin the fetched asset
+  -verbose
+    	Generate verbose output
 ```
-
-At the moment, `ipfs-fetch` only has two flags: `-ipfsurl` and `-nopin`. 
 
 If you have a non-standard IPFS configuration, then your node might not be listening for API
 requests at the default `127.0.0.1:5001`. You can specify the correct address via `-ipfsurl`.

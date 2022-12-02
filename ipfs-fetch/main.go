@@ -27,6 +27,13 @@ func init() {
 	flag.BoolVar(&nofetch, "nofetch", nofetch, "Do not download files; only pin them to the IPFS node")
 	flag.BoolVar(&verbose, "verbose", verbose, "Generate verbose output")
 	flag.BoolVar(&dryrun, "dryrun", dryrun, "Pretend to fetch and pin, but don't really do it (useful with the -verbose flag)")
+
+	flag.Usage = func() {
+		fmt.Fprintf(flag.CommandLine.Output(), "Usage: %s [OPTIONS] [FILES...]\n\n", os.Args[0])
+		fmt.Fprintf(flag.CommandLine.Output(), "Fetch assets specified in the provided FILES. If no files are\nprovided, then the assets are read from standard input.\n\n")
+		fmt.Fprintf(flag.CommandLine.Output(), "Options:\n\n")
+		flag.PrintDefaults()
+	}
 }
 
 type Payload map[string]string
@@ -90,13 +97,6 @@ func Normalize(p string) (string, error) {
 	}
 
 	return rel, nil
-}
-
-func Usage() {
-	fmt.Fprintf(flag.CommandLine.Output(), "Usage: %s [OPTION]... [FILE]...\n\n", os.Args[0])
-	fmt.Fprintf(flag.CommandLine.Output(), "Fetch assets specified by [FILE]...\n\n")
-	fmt.Fprintf(flag.CommandLine.Output(), "Options:\n\n")
-	flag.PrintDefaults()
 }
 
 func NoFetch(fetcher *ipfs.IpfsShell, hash, p string) error {
