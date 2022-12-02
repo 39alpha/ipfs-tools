@@ -72,15 +72,13 @@ and the hash will for the dataset will be updated.
 
 ### Additional Flags
 
-
 ```shell
-$ ipfs-put
-Usage: ipfs-put [OPTION]... [FILE|DIR]...
+$ ipfs-put [OPTIONS] [FILE|DIR...]
 
-Put assets from [FILE|DIR]...
+Add assets from one or more files or directories to an IPFS node and
+write a JSON object mapping CIDs to the path of the asset.
 
 Options:
-
   -ipfsurl string
     	URL to running IPFS node (default "127.0.0.1:5001")
   -o string
