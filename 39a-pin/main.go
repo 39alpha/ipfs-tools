@@ -112,7 +112,7 @@ func unlockKeyring() (agent.ExtendedAgent, error) {
 }
 
 func findHostKeys(filename, host string) ([]ssh.PublicKey, error) {
-	rest, err := ioutil.ReadFile("/home/dgm/.ssh/known_hosts")
+	rest, err := ioutil.ReadFile(filename)
 	if err != nil {
 		os.Exit(1)
 	}
